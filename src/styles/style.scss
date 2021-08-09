@@ -1,0 +1,9 @@
+@import './mixins';
+@import './variables';
+
+
+//pages
+@import '../pages/app';
+@import '../pages/Login/login';
+@import '../pages/Main/main';
+@import '../pages/NotFound/notFound';

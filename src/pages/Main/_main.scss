@@ -1,0 +1,12 @@
+.playlists-top{
+  height:100vw;
+  width: 100px;
+  overflow-y: scroll;
+  // overflow-x: hidden;
+  transform: rotate(-90deg) translateX(-115px);
+  transform-origin: left top;
+}
+.playlist-item{
+  transform: rotate(90deg);
+  transform-origin: right top;
+}
