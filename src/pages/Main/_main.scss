@@ -1,12 +1,46 @@
 .playlists-top{
+  position: absolute;
   height:100vw;
-  width: 100px;
+  width: 140px;
   overflow-y: scroll;
-  // overflow-x: hidden;
-  transform: rotate(-90deg) translateX(-115px);
+  overflow-x: hidden;
+  transform: rotate(90deg) translate(0, -100vw);
   transform-origin: left top;
+  background: #333;
 }
+  ::-webkit-scrollbar{
+    background-color: rgb(170, 42, 42);
+    width: 4px;
+  }
+  ::-webkit-scrollbar-thumb{
+    background-color: rgb(236, 26, 26);
+  }
 .playlist-item{
-  transform: rotate(90deg);
-  transform-origin: right top;
+  width: 130px;
+  height: 130px;
+  padding-top: 10px;
+  transform: rotate(-90deg) translateX(-130px);
+  transform-origin: left top;
+  .playlist-cover{
+    width: 90px;
+    aspect-ratio: 1/1;
+  }
+  .playlist-title{
+    max-width: 90px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.tracklist-container{
+  position: relative;
+  top: 140px;
+  display: flex;
+  flex-direction: row;
+}
+.tracklist{
+  width: 48vw;
+  margin: 1vw;
+  height: max-content;
+  background: rgb(28, 80, 42);
 }

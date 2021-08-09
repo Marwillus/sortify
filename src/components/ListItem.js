@@ -7,8 +7,8 @@ function ListItem({ image, title, artist }) {
   })
   return (
     <div className='playlist-item'>
-      <img src={smallestImage.url} alt="cover" width='80'/>
-      <div>{title}</div>
+      <img className='playlist-cover' src={smallestImage.url} alt="cover" />
+      <div className='playlist-title'>{title}</div>
       {artist && <div>{artist}</div>}
     </div>
     

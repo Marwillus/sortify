@@ -23,19 +23,21 @@ function Main({ isValidSession, history }) {
   }, [token]);
 
   return (
-    <div>
-      <ul className='playlists-top'>
+    <>
+      <div className="playlists-top">
         {playlists.map((item) => {
           return <ListItem image={item.images} title={item.name} />;
         })}
-      </ul>
-      <div className='tracklist-l'>
-        <ul>Tracklist 1</ul>
       </div>
-      <div className='tracklist-r'>
-        <ul>Tracklist 2</ul>
+      <div className="tracklist-container">
+        <div className="tracklist">
+          <ul>Tracklist 1</ul>
+        </div>
+        <div className="tracklist">
+          <ul>Tracklist 2</ul>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
