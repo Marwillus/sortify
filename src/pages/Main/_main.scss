@@ -6,15 +6,15 @@
   overflow-x: hidden;
   transform: rotate(90deg) translate(0, -100vw);
   transform-origin: left top;
-  background: #333;
-}
-  ::-webkit-scrollbar{
+  &::-webkit-scrollbar{
     background-color: rgb(170, 42, 42);
     width: 4px;
   }
-  ::-webkit-scrollbar-thumb{
+  &::-webkit-scrollbar-thumb{
     background-color: rgb(236, 26, 26);
   }
+}
+  
 .playlist-item{
   width: 130px;
   height: 130px;
@@ -39,8 +39,16 @@
   flex-direction: row;
 }
 .tracklist{
-  width: 48vw;
-  margin: 1vw;
+  width: 50vw;
   height: max-content;
   background: rgb(28, 80, 42);
+  border-right: black 1px solid;
+}
+.tracklist-item{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  div{
+    margin: 0 1rem;
+  }
 }

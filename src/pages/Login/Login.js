@@ -1,11 +1,15 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { FaSpotify } from "react-icons/fa";
 
-const Login = () => {
+const Login = ({isValidSession, history}) => {
   const clientId = process.env.REACT_APP_CLIENT_ID;
   const authUrl = process.env.REACT_APP_AUTHORIZE_URL;
   const redirectUrl = process.env.REACT_APP_REDIRECT_URL;
-  // const spotifyUrl = `${authUrl}?client_id=${clientId}&redirect_uri=${redirectUrl}&response_type=token&show_dialog=true&scope=user-library-read+user-follow-read+user-top-read+playlist-modify-private+playlist-modify-public`;
+
+  useEffect(() => {
+   if (isValidSession()) history.push('/main')
+
+  })
 
   const handleLogin = () => {
     window.location = `${authUrl}?client_id=${clientId}&redirect_uri=${redirectUrl}&response_type=token&show_dialog=true&scope=user-library-read+user-top-read+playlist-modify-private+playlist-modify-public`;

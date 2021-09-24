@@ -28,11 +28,19 @@ function App() {
 
     return isSessionValid;
   };
+ 
+
+
   return (
     <Router>
       <div className="App">
         <Switch>
-          <Route exact path="/" component={Login} />
+          <Route exact path="/" render={(props) => (
+              <Login
+                isValidSession={isValidSession}
+                {...props}
+              />)}
+               />
           <Route
             path="/redirect"
             render={(props) => (
