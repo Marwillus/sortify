@@ -1,26 +1,28 @@
 .playlists-top{
   position: absolute;
-  height:100vw;
-  width: 140px;
+  display: flex;
+  flex-direction: column-reverse;
   overflow-y: scroll;
   overflow-x: hidden;
   transform: rotate(90deg) translate(0, -100vw);
   transform-origin: left top;
+  height:100vw;
   &::-webkit-scrollbar{
-    background-color: rgb(170, 42, 42);
-    width: 4px;
+    background-color: rgba(26, 7, 7, 0.26);
+    width: 6px;
   }
   &::-webkit-scrollbar-thumb{
-    background-color: rgb(236, 26, 26);
+    background-color: rgb(24, 5, 5);
   }
 }
   
 .playlist-item{
   width: 130px;
-  height: 130px;
+  // height: 130px;
   padding-top: 10px;
-  transform: rotate(-90deg) translateX(-130px);
+  transform: rotate(-90deg) translateX(-100px);
   transform-origin: left top;
+  cursor: pointer;
   .playlist-cover{
     width: 90px;
     aspect-ratio: 1/1;
@@ -32,23 +34,48 @@
     text-overflow: ellipsis;
   }
 }
+
 .tracklist-container{
-  position: relative;
+  position: absolute;
   top: 140px;
+  right:0;
+  left:0;
+  bottom: 0;
   display: flex;
   flex-direction: row;
 }
 .tracklist{
-  width: 50vw;
-  height: max-content;
-  background: rgb(28, 80, 42);
-  border-right: black 1px solid;
+  width: 50%;
+  padding: 1.5rem;
+  overflow-y: scroll;
+  background: rgba(0, 0, 0, 0.5);
+  &::-webkit-scrollbar{
+    background-color: rgba(158, 246, 151, 0.26);
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb{
+    background-color: rgb(24, 5, 5);
+  }
+
 }
 .tracklist-item{
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  div{
-    margin: 0 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0.75rem;
+  .tracklist-cover{
+    padding-right: 2rem;
+  }
+  .tracklist-title{
+    font-size: 1.25rem;
+    word-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    span{
+      display: block;
+      font-weight: 200;
+      color: rgba(255, 255, 255, 0.589);
+    }
   }
 }

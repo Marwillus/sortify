@@ -8,8 +8,8 @@ function TracklistItem({ image, title, artists }) {
   return (
     <div className='tracklist-item'>
       <img className='tracklist-cover' src={smallestImage.url} alt="cover" />
-      <div className='tracklist-title'>{title}</div>
-      {artists.map(artist=>{return artist.name})}
+      <div className='tracklist-title'>{title} <span>{artists[0].name}</span></div>
+      
     </div>
     
   );
