@@ -341,8 +341,9 @@ code {
 
 .tracklist {
   width: 50%;
-  padding: 1.5rem;
+  padding: 2rem;
   overflow-y: scroll;
+  overflow-x: hidden;
   background: rgba(0, 0, 0, 0.5);
 }
 
@@ -370,6 +371,9 @@ code {
       -ms-flex-align: center;
           align-items: center;
   margin: 0.75rem;
+  background: rgba(88, 206, 86, 0.05);
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .tracklist-item .tracklist-cover {
