@@ -295,7 +295,7 @@ code {
 
 .playlists-top::-webkit-scrollbar {
   background-color: rgba(26, 7, 7, 0.26);
-  width: 6px;
+  width: 8px;
 }
 
 .playlists-top::-webkit-scrollbar-thumb {
@@ -303,7 +303,7 @@ code {
 }
 
 .playlist-item {
-  width: 130px;
+  width: 138px;
   padding-top: 10px;
   -webkit-transform: rotate(-90deg) translateX(-100px);
           transform: rotate(-90deg) translateX(-100px);
@@ -326,7 +326,7 @@ code {
 
 .tracklist-container {
   position: absolute;
-  top: 140px;
+  top: 150px;
   right: 0;
   left: 0;
   bottom: 0;
@@ -348,12 +348,12 @@ code {
 }
 
 .tracklist::-webkit-scrollbar {
-  background-color: rgba(158, 246, 151, 0.26);
+  background: rgba(88, 206, 86, 0.05);
   width: 6px;
 }
 
 .tracklist::-webkit-scrollbar-thumb {
-  background-color: #180505;
+  background-color: black;
 }
 
 .tracklist-item {
@@ -391,6 +391,27 @@ code {
   display: block;
   font-weight: 200;
   color: rgba(255, 255, 255, 0.589);
+}
+
+.tracklist-placeholder {
+  position: relative;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.tracklist-placeholder svg {
+  display: block;
+  padding-top: 1rem;
+  font-size: 4rem;
+  margin: auto;
 }
 
 .notfound-container h1 {

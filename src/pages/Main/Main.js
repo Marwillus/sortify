@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { GrAddCircle } from "react-icons/gr";
+import { IoAddCircleOutline } from "react-icons/io5";
 import PlaylistItem from "../../components/PlaylistItem";
 import TracklistItem from "../../components/TracklistItem";
 
@@ -81,48 +81,13 @@ function Main({ isValidSession, history }) {
               ) : (
                 <div className="tracklist-placeholder">
                   {" "}
-                  Drop a Playlist <GrAddCircle />
+                  Drop a Playlist <IoAddCircleOutline/>
                 </div>
               )}
             </div>
           );
         })}
       </div>
-
-      {/* <div className="tracklist">
-          {tracklistLeft.length > 0 ? (
-            tracklistLeft.map((item) => {
-              console.log(item);
-              return (
-                <TracklistItem
-                  key={item.track.id}
-                  image={item.track.album.images}
-                  title={item.track.name}
-                  artists={item.track.artists}
-                />
-              );
-            })
-          ) : (
-            <div className="tracklist-placeholder">
-              {" "}
-              Drop a Playlist <GrAddCircle />
-            </div>
-          )}
-        </div>
-        <div className="tracklist">
-          {tracklistRight.map((item) => {
-            console.log(item);
-            return (
-              <TracklistItem
-                key={item.track.id}
-                image={item.track.album.images}
-                title={item.track.name}
-                artists={item.track.artists}
-              />
-            );
-          })}
-        </div>
-      </div> */}
     </>
   );
 }

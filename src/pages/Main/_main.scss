@@ -9,7 +9,7 @@
   height:100vw;
   &::-webkit-scrollbar{
     background-color: rgba(26, 7, 7, 0.26);
-    width: 6px;
+    width: 8px;
   }
   &::-webkit-scrollbar-thumb{
     background-color: rgb(24, 5, 5);
@@ -17,7 +17,7 @@
 }
   
 .playlist-item{
-  width: 130px;
+  width: 138px;
   // height: 130px;
   padding-top: 10px;
   transform: rotate(-90deg) translateX(-100px);
@@ -37,7 +37,7 @@
 
 .tracklist-container{
   position: absolute;
-  top: 140px;
+  top: 150px;
   right:0;
   left:0;
   bottom: 0;
@@ -51,11 +51,11 @@
   overflow-x: hidden;
   background: rgba(0, 0, 0, 0.5);
   &::-webkit-scrollbar{
-    background-color: rgba(158, 246, 151, 0.26);
+  background: rgba(88, 206, 86, 0.05);
     width: 6px;
   }
   &::-webkit-scrollbar-thumb{
-    background-color: rgb(24, 5, 5);
+    background-color: rgb(0, 0, 0);
   }
 
 }
@@ -81,5 +81,22 @@
       font-weight: 200;
       color: rgba(255, 255, 255, 0.589);
     }
+  }
+}
+
+.tracklist-placeholder{
+  position: relative;
+  width: fit-content;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.2);
+  svg{
+    display: block;
+    padding-top: 1rem;
+    font-size: 4rem;
+    margin: auto;
   }
 }
