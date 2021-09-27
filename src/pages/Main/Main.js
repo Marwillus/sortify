@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 import { IoAddCircleOutline } from "react-icons/io5";
 import PlaylistItem from "../../components/PlaylistItem";
 import TracklistItem from "../../components/TracklistItem";
@@ -16,7 +18,8 @@ function Main({ isValidSession, history }) {
   // const [tracklistRight, setTracklistRight] = useState([]);
 
   if (!isValidSession()) history.push("/");
-  // console.log(playlists);
+  
+  // get users playlist at start of session
   useEffect(() => {
     axios
       .get("https://api.spotify.com/v1/me/playlists", {
@@ -28,7 +31,8 @@ function Main({ isValidSession, history }) {
       .catch((err) => console.log(err));
   }, [token]);
 
-  const getPlaylist = (url, column) => {
+  // get tracklist of a playlist
+  const getTracklist = (url, column) => {
     axios
       .get(url, {
         headers: {
@@ -38,37 +42,68 @@ function Main({ isValidSession, history }) {
       .then((res) => {
         setTracklists((prevLists) => {
           return prevLists.map((tracklist, i) => {
-            if (i === column)  return { ...tracklist, list: res.data.items };
-             return tracklist;
+            if (i === column) return { ...tracklist, list: res.data.items };
+            return tracklist;
           });
         });
-        console.log(tracklists);
       })
       .catch((err) => console.log(err));
   };
-  // console.log(tracklistLeft);
+
+  // handle drag&drop
+  const handleOnDragEnd = (result) => {
+    if (!result.destination) return;
+
+    // const list = Array.from(todoList);
+    // const [reorderedList] = list.splice(result.source.index, 1);
+    // list.splice(result.destination.index, 0, reorderedList);
+    // setTodoList(list);
+  };
   return (
     <>
-      <div className="playlists-top">
-        {playlists.map((item) => {
-          return (
-            <div
-              onClick={() => getPlaylist(item.tracks.href, 0)}
-              onDoubleClick={() => getPlaylist(item.tracks.href, 1)}
-              key={item.id}
-            >
-              <PlaylistItem image={item.images} title={item.name} />;
-            </div>
-          );
-        })}
-      </div>
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+          <Droppable droppableId="playlist-results">
+            {(provided) => (
+              <ul
+                className="playlists-top"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {playlists.map((item, index) => {
+                  return (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id.toString()}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <li
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}
+                          onClick={() => getTracklist(item.tracks.href, 0)}
+                        >
+                            <PlaylistItem
+                              image={item.images}
+                              title={item.name}
+                            />                            
+                        </li>
+                      )}
+                    </Draggable>
+                  )
+                })}
+
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
       <div className="tracklist-container">
         {tracklists.map((trackobj, i) => {
           return (
             <div key={"tracklist-" + i} className="tracklist">
               {trackobj.list.length > 0 ? (
                 trackobj.list.map((item) => {
-                  console.log(item);
                   return (
                     <TracklistItem
                       key={item.track.id}
@@ -81,7 +116,7 @@ function Main({ isValidSession, history }) {
               ) : (
                 <div className="tracklist-placeholder">
                   {" "}
-                  Drop a Playlist <IoAddCircleOutline/>
+                  Drop a Playlist <IoAddCircleOutline />
                 </div>
               )}
             </div>
