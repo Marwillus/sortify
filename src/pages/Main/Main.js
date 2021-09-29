@@ -11,12 +11,12 @@ import TracklistItem from "../../components/TracklistItem";
 const getListStyle = (isDraggingOver) => ({
   background: isDraggingOver
     ? "rgba(255, 255, 255, 0.1)"
-    : "rgba(0, 0, 0, 0.5)",
+    : "none",
 });
 const getItemStyle = (isDragging, draggableStyle) => ({
   background: isDragging
     ? "rgba(21, 245, 21, 0.342)"
-    : "rgba(88, 206, 86, 0.05)",
+    : "rgba(255, 206, 86, 0.05)",
   // styles we need to apply on draggables
   ...draggableStyle,
 });

@@ -301,6 +301,8 @@ code {
   overflow-y: scroll;
   overflow-x: hidden;
   padding: .5rem;
+  -webkit-box-shadow: inset 0 0 5px rgba(128, 128, 128, 0.438);
+          box-shadow: inset 0 0 5px rgba(128, 128, 128, 0.438);
 }
 
 .tracklist .tracklist-content::-webkit-scrollbar {
