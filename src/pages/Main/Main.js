@@ -6,17 +6,20 @@ import { IoAddCircleOutline } from "react-icons/io5";
 import PlaylistItem from "../../components/PlaylistItem";
 import TracklistItem from "../../components/TracklistItem";
 
-  // change style of elements while interaction
+// change style of elements while interaction
 
-  const getListStyle = (isDraggingOver) => ({
-    background: isDraggingOver ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.5)",
-  });
-  const getItemStyle = (isDragging, draggableStyle) => ({
-    background: isDragging ? "rgba(21, 245, 21, 0.342)" : "rgba(88, 206, 86, 0.05)",
-    // styles we need to apply on draggables
-    ...draggableStyle,
-  });
-
+const getListStyle = (isDraggingOver) => ({
+  background: isDraggingOver
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.5)",
+});
+const getItemStyle = (isDragging, draggableStyle) => ({
+  background: isDragging
+    ? "rgba(21, 245, 21, 0.342)"
+    : "rgba(88, 206, 86, 0.05)",
+  // styles we need to apply on draggables
+  ...draggableStyle,
+});
 
 function Main({ isValidSession, history }) {
   const params = localStorage.getItem("params");
@@ -28,7 +31,7 @@ function Main({ isValidSession, history }) {
     { list: [], loading: false },
   ]);
 
-  // console.log(playlists);
+  // console.log(playlistResult);
 
   if (!isValidSession()) history.push("/");
 
@@ -44,10 +47,11 @@ function Main({ isValidSession, history }) {
       .catch((err) => console.log(err));
   }, [token]);
 
-  // get tracklist of a playlist
-  const getTracklist = (url, column) => {
+  // get tracklist of a playlist and put it in the right column
+  const getTracklist = (playlistData, column) => {
+    const tracklistUrl = playlistData.tracks.href;
     axios
-      .get(url, {
+      .get(tracklistUrl, {
         headers: {
           Authorization: "Bearer " + token,
         },
@@ -55,7 +59,8 @@ function Main({ isValidSession, history }) {
       .then((res) => {
         setPlaylists((prevLists) => {
           return prevLists.map((tracklist, i) => {
-            if (i === column) return { ...tracklist, list: res.data.items };
+            if (i === column)
+              return { ...tracklist, list: res.data.items, data: playlistData };
             return tracklist;
           });
         });
@@ -68,42 +73,48 @@ function Main({ isValidSession, history }) {
     const result = [...list];
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
-  
+
     return result;
   };
 
-  // handle drag&drop topbar
-  const handleTopBarDrag = (result) => {
-    console.log(result.destination);
-    if (!result.destination) return;
-
-    const items = reorder(
-      playlistResult,
-      result.source.index,
-      result.destination.index
-    );
-
-    setPlaylistResult(items)
-  };
-  // handle drag&drop list-sections
+  // handle drag&drop
   const handleOnDragEnd = (result) => {
-    console.log(result.destination);
+    // console.table(result);
     if (!result.destination) return;
-    const playlistPosition = result.destination.droppableId.slice(-1)
-    const items = reorder(
-      playlists[playlistPosition].list,
-      result.source.index,
-      result.destination.index
-    )
-    const newPlaylists = [...playlists]
-    newPlaylists[playlistPosition].list = items
-    setPlaylists(newPlaylists)
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+
+    if (result.source.droppableId === "playlists-top") {
+      if (result.destination.droppableId === result.source.droppableId) {
+        const items = reorder(playlistResult, sourceIndex, destinationIndex);
+        setPlaylistResult(items);
+      } else {
+        const playlistPosition = parseInt(
+          result.destination.droppableId.slice(-1)
+        );
+        const selectedPlaylist = [...playlistResult].splice(sourceIndex, 1)[0];
+        getTracklist(selectedPlaylist, playlistPosition);
+      }
+    } else {
+      const playlistPosition = result.destination.droppableId.slice(-1);
+      if (result.destination.droppableId === result.source.droppableId) {
+        const items = reorder(
+          playlists[playlistPosition].list,
+          result.source.index,
+          result.destination.index
+        );
+        const newPlaylists = [...playlists];
+        newPlaylists[playlistPosition].list = items;
+        setPlaylists(newPlaylists);
+      }
+    }
   };
 
   // render main /////////////////////////////////////
   return (
     <>
-      <DragDropContext onDragEnd={handleTopBarDrag}>
+      <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="playlists-top" direction="horizontal">
           {(provided, snapshot) => (
             <ul
@@ -128,7 +139,7 @@ function Main({ isValidSession, history }) {
                           snapshot.isDragging,
                           provided.draggableProps.style
                         )}
-                        className='playlist-item'
+                        className="playlist-item"
                         onClick={() => getTracklist(item.tracks.href, 0)}
                       >
                         <PlaylistItem image={item.images} title={item.name} />
@@ -142,68 +153,69 @@ function Main({ isValidSession, history }) {
             </ul>
           )}
         </Droppable>
-      </DragDropContext>
-      <div className="tracklist-container">
-        {playlists.map((playlist, index) => {
-          return (
-            <DragDropContext
-              key={"section-" + index}
-              onDragEnd={handleOnDragEnd}
-            >
-              <Droppable droppableId={"playlist-" + index}>
-                {(provided, snapshot) => (
-                  <ul
-                    className={"tracklist playlist-" + index}
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-              >
-                    {playlist.list.length > 0 ? (
-                      playlist.list.map((item, index) => {
-                        const track = item.track;
-                        return (
-                          <Draggable
-                            key={track.id}
-                            draggableId={track.id.toString()}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <li
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                                className='tracklist-item'
-                              >
-                                <TracklistItem
-                                  key={track.id}
-                                  image={track.album.images}
-                                  title={track.name}
-                                  artists={track.artists}
-                                />
-                              </li>
-                            )}
-                          </Draggable>
-                        );
-                      })
-                    ) : (
-                      <div className="tracklist-placeholder">
-                        {" "}
-                        Drop a Playlist <IoAddCircleOutline />
-                      </div>
-                    )}
+        <div className="tracklist-container">
+          {playlists.map((playlist, index) => {
+            return (
+              <div className="tracklist">
+                <h3 className="tracklist-header">{playlist.data?.name}</h3>
+                <Droppable
+                  key={"section-" + index}
+                  droppableId={"playlist-" + index}
+                >
+                  {(provided, snapshot) => (
+                    <ul
+                      className={"tracklist-content playlist-" + index }
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      style={getListStyle(snapshot.isDraggingOver)}
+                    >
+                      {playlist.list.length > 0 ? (
+                        playlist.list.map((item, index) => {
+                          const track = item.track;
+                          return (
+                            <Draggable
+                              key={track.id}
+                              draggableId={track.id.toString()}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <li
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  ref={provided.innerRef}
+                                  style={getItemStyle(
+                                    snapshot.isDragging,
+                                    provided.draggableProps.style
+                                  )}
+                                  className="tracklist-item"
+                                >
+                                  <TracklistItem
+                                    key={track.id}
+                                    image={track.album.images}
+                                    title={track.name}
+                                    artists={track.artists}
+                                  />
+                                </li>
+                              )}
+                            </Draggable>
+                          );
+                        })
+                      ) : (
+                        <div className="tracklist-placeholder">
+                          {" "}
+                          Drop a Playlist <IoAddCircleOutline />
+                        </div>
+                      )}
 
-                    {provided.placeholder}
-                  </ul>
-                )}
-              </Droppable>
-            </DragDropContext>
-          );
-        })}
-      </div>
+                      {provided.placeholder}
+                    </ul>
+                  )}
+                </Droppable>
+              </div>
+            );
+          })}
+        </div>
+      </DragDropContext>
     </>
   );
 }

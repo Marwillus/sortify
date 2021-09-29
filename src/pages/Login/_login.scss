@@ -12,66 +12,6 @@
   margin: 0 15%;
 }
 
-.title-box {
-  width: 100%;
-}
-
-.title {
-  @include maintitle-style;
-  margin-top: 80px;
-}
-
-.sub-title {
-  color: rgba(235, 233, 233, 0.6);
-  font-size: 18px;
-  border-bottom: $main-border;
-  font-family: "Nunito Sans", sans-serif;
-  line-height: 2em;
-}
-
-.card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 30px;
-  padding-top: 25px;
-  border-top: solid 1px rgba(235, 233, 233, 0.282);
-}
-
-.card-box {
-  @include standard-boxstyle;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  font-family: "Nunito Sans", sans-serif;
-  letter-spacing: 0.6px;
-  border-radius: 25px;
-  width: 275px;
-  height: 380px;
-  padding: 0 10px;
-}
-
-.card .right {
-  margin: 0 5px;
-  color: $main-color;
-  font-size: 4em !important;
-}
-
-.select-category {
-  margin: 0 auto;
-  width: 180px;
-  color: $main-color;
-}
-
-.p-style {
-  font-weight: bold;
-  color: white;
-  font-size: 17px;
-  text-align: center;
-  margin-top: 30px;
-  height: 50px;
-}
 
 .login-box {
   display: flex;
@@ -86,11 +26,6 @@
   font-family: "Nunito Sans", sans-serif;
   font-weight: bold;
   margin-right: 10px;
-}
-.create-playlist {
-  margin: 0 auto;
-  width: 180px;
-  color: $main-color;
 }
 
 .intro-container button:hover {
