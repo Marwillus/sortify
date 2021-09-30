@@ -110,11 +110,14 @@ function Main({ isValidSession, history }) {
       }
     }
   };
+  const handleOnDragStart = (result) => {
+    console.log(result);
+  }
 
   // render main /////////////////////////////////////
   return (
     <>
-      <DragDropContext onDragEnd={handleOnDragEnd}>
+      <DragDropContext onDragStart={handleOnDragStart} onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="playlists-top" direction="horizontal">
           {(provided, snapshot) => (
             <ul
@@ -161,6 +164,8 @@ function Main({ isValidSession, history }) {
                 <Droppable
                   key={"section-" + index}
                   droppableId={"playlist-" + index}
+                  // change this later when preventing dropping playlists in tracklist
+                  isDropDisabled={false}
                 >
                   {(provided, snapshot) => (
                     <ul
