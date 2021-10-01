@@ -296,6 +296,34 @@ code {
           user-select: none;
 }
 
+.tracklist .btn-minimize {
+  width: 2rem;
+  height: 2rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: calc(2rem / 2);
+  border: none;
+  -webkit-box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.486);
+          box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.486);
+  background-color: #3f513f;
+  color: white;
+}
+
+.tracklist .btn-minimize svg {
+  font-size: calc(2rem / 2);
+}
+
+.tracklist .btn-minimize:hover {
+  background-color: #5f6d5f;
+}
+
 .tracklist .tracklist-content {
   max-height: 75%;
   overflow-y: scroll;

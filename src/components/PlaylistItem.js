@@ -6,10 +6,10 @@ function PlaylistItem({ image, title }) {
     return smallest
   })
   return (
-    <>
+    <div className='playlist-item'>
       <img className='playlist-cover' src={smallestImage.url} alt="cover" />
       <div className='playlist-title'>{title}</div>
-    </>
+    </div>
     
   );
 }
