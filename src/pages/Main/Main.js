@@ -3,7 +3,7 @@ import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { IoAddCircleOutline } from "react-icons/io5";
-import { FiMinimize2 } from "react-icons/fi";
+import { FiMinimize2, FiSave } from "react-icons/fi";
 import PlaylistItem from "../../components/PlaylistItem";
 import TracklistItem from "../../components/TracklistItem";
 
@@ -13,7 +13,7 @@ const getListStyle = (isDraggingOver) => ({
   background: isDraggingOver && "rgba(255, 255, 255, 0.1)",
 });
 const getItemStyle = (isDragging, draggableStyle) => ({
-  borderRadius: '.5rem',
+  borderRadius: ".5rem",
   background: isDragging && "rgba(21, 245, 21, 0.342)",
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -29,7 +29,7 @@ function Main({ isValidSession, history }) {
     { lists: [], selected: null },
   ]);
 
-  console.log(playlists);
+  // console.log(playlists);
 
   if (!isValidSession()) history.push("/");
 
@@ -121,12 +121,17 @@ function Main({ isValidSession, history }) {
     // console.log(result);
   };
 
-  const handleMinimize = (onSection) => {
-    console.log('minimize');
-    // setPlaylists(
-    //   [...playlists, playlists.lists[onSection].selected= null]
-    // )
-  }
+  const handleMinimize = (index) => {
+    const newPlaylists = [...playlists];
+    newPlaylists[index] = { ...newPlaylists[index], selected: null };
+    setPlaylists(newPlaylists);
+  };
+
+  const handleMaximize = (index, item) => {
+    const newPlaylists = [...playlists];
+    newPlaylists[index] = { ...newPlaylists[index], selected: item };
+    setPlaylists(newPlaylists);
+  };
 
   // render main /////////////////////////////////////
   return (
@@ -173,11 +178,11 @@ function Main({ isValidSession, history }) {
           )}
         </Droppable>
         <div className="working-space">
-          {playlists.map((section, index) => {
+          {playlists.map((section, sectionIndex) => {
             return (
               <Droppable
-                key={"playlist-container-" + index}
-                droppableId={"playlist-container-" + index}
+                key={"playlist-container-" + sectionIndex}
+                droppableId={"playlist-container-" + sectionIndex}
               >
                 {(provided, snapshot) => (
                   <section
@@ -189,20 +194,34 @@ function Main({ isValidSession, history }) {
                       section.selected !== null ? (
                         <div className="tracklist">
                           <div className="tracklist-header">
-                            {section.lists[section.selected].data.name}
-                            <button className="btn-minimize" onClick={()=>handleMinimize(section.selected)}><FiMinimize2 />
-                          </button>
+                            <h4>{section.lists[section.selected].data.name}</h4>
+                            <div>
+                              <button
+                                className="btn minimize"
+                                onClick={() =>
+                                  handleMinimize(playlists.indexOf(section))
+                                }
+                              >
+                                <FiMinimize2 />
+                              </button>
+                              <button
+                                className="btn save"
+                                onClick={() => handleMinimize(section.selected)}
+                              >
+                                <FiSave />
+                              </button>
+                            </div>
                           </div>
                           <Droppable
-                            key={"section-" + index}
-                            droppableId={"playlist-" + index}
+                            key={"section-" + sectionIndex}
+                            droppableId={"playlist-" + sectionIndex}
                             // change this later when preventing dropping playlists in tracklist
                             isDropDisabled={false}
                           >
                             {(provided, snapshot) => (
                               <ul
                                 className={
-                                  "tracklist-content playlist-" + index
+                                  "tracklist-content"
                                 }
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
@@ -215,7 +234,7 @@ function Main({ isValidSession, history }) {
                                       <Draggable
                                         key={track.id}
                                         draggableId={track.id.toString()}
-                                        index={index}
+                                        index={sectionIndex}
                                       >
                                         {(provided, snapshot) => (
                                           <li
@@ -247,13 +266,30 @@ function Main({ isValidSession, history }) {
                         </div>
                       ) : (
                         //render all playlists
-                        section.lists.map((item) => {
-                          console.log("render playlists");
+                        section.lists.map((item, itemIndex) => {
                           return (
-                            <PlaylistItem
-                              image={item.data.images}
-                              title={item.data.name}
-                            />
+                            <Droppable
+                              key={`playlist-item-${sectionIndex}-${itemIndex}`}
+                              droppableId={`playlist-item-${sectionIndex}-${itemIndex}`}
+                              // change this later when preventing dropping playlists in tracklist
+                              isDropDisabled={false}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  className="playlist-drop-item"
+                                  style={getListStyle(snapshot.isDraggingOver)}
+                                  {...provided.droppableProps}
+                                  ref={provided.innerRef}
+                                  onDoubleClick={()=>handleMaximize(sectionIndex, itemIndex)}
+                                >
+                                  <PlaylistItem
+                                    image={item.data.images}
+                                    title={item.data.name}
+                                  />
+                                  {provided.placeholder}
+                                </div>
+                              )}
+                            </Droppable>
                           );
                         })
                       )

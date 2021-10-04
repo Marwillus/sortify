@@ -52,17 +52,23 @@
   width: 100%;
   height: 100%;
   .tracklist-header {
-    margin: 0;
-    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .5rem;
+  h4{
+    margin: .5rem 1rem;
     font-size: 2rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: rgba(149, 149, 149, 0.719);
     user-select: none;
   }
-  .btn-minimize{
-    float: right;
+  .btn{
     @include round-btn(2rem);
+    margin-left: .5rem;
+  }
+  .minimize{
     background-color: #3f513f;
     color: white;
     &:hover{
@@ -73,6 +79,18 @@
       color:rgba(0, 0, 0)
     }
   }
+  .save{
+    background-color: #3ab13a;
+    color: white;
+    &:hover{
+    background-color: #86c286;
+    }
+    &:active{
+      background-color: #badfba;
+      color:rgba(0, 0, 0)
+    }
+  }
+}
   .tracklist-content {
     max-height: 75%;
     overflow-y: scroll;
