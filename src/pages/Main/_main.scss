@@ -47,10 +47,20 @@
   padding: 1rem 2rem;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+.playlist-drop-item{
+  padding: .5rem;
+  width: fit-content;
+  margin: 0;
 }
 .tracklist {
   width: 100%;
   height: 100%;
+  // background: black;
   .tracklist-header {
     display: flex;
     justify-content: space-between;
@@ -125,12 +135,6 @@
 }
 
 .tracklist-placeholder {
-  position: relative;
-  text-align: center;
-  // width: fit-content;
-  // top: 50%;
-  // left: 50%;
-  // transform: translate(-50%, -50%);
   font-size: 2rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.2);

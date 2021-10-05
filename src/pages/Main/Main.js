@@ -28,6 +28,7 @@ function Main({ isValidSession, history }) {
     { lists: [], selected: 0 },
     { lists: [], selected: null },
   ]);
+  const [dragItemOrigin, setDragItemOrigin] = useState("");
 
   // console.log(playlists);
 
@@ -91,12 +92,12 @@ function Main({ isValidSession, history }) {
     const destinationIndex = result.destination.index;
 
     if (result.source.droppableId === "playlists-top") {
-      // sort playlists inside top bar
       if (result.destination.droppableId === result.source.droppableId) {
+        // sort playlists inside top bar
         const items = reorder(playlistResult, sourceIndex, destinationIndex);
         setPlaylistResult(items);
-        // get tracklist from playlist and put it into section
       } else {
+        // get tracklist from playlist and put it into section
         const playlistPosition = parseInt(
           result.destination.droppableId.slice(-1)
         );
@@ -104,21 +105,25 @@ function Main({ isValidSession, history }) {
         getTracklist(selectedPlaylist, playlistPosition);
       }
     } else {
-      const playlistPosition = result.destination.droppableId.slice(-1);
+      // sort tracklist order
+      const tracklistIndexes = result.destination.droppableId.split("-");
+      const sectionIndex = tracklistIndexes[tracklistIndexes.length - 2];
+      const playlistIndex = tracklistIndexes[tracklistIndexes.length - 1];
       if (result.destination.droppableId === result.source.droppableId) {
-        const items = reorder(
-          playlists[playlistPosition].list,
+        const newTracklist = reorder(
+          playlists[sectionIndex].lists[playlistIndex].tracklist,
           result.source.index,
           result.destination.index
         );
         const newPlaylists = [...playlists];
-        newPlaylists[playlistPosition].list = items;
+        newPlaylists[sectionIndex].lists[playlistIndex].tracklist =
+          newTracklist;
         setPlaylists(newPlaylists);
       }
     }
   };
   const handleOnDragStart = (result) => {
-    // console.log(result);
+    setDragItemOrigin(result.source.droppableId);
   };
 
   const handleMinimize = (index) => {
@@ -140,9 +145,13 @@ function Main({ isValidSession, history }) {
         onDragStart={handleOnDragStart}
         onDragEnd={handleOnDragEnd}
       >
-        <Droppable droppableId="playlists-top" direction="horizontal">
+        <Droppable
+          droppableId="playlists-top"
+          direction="horizontal"
+          isDropDisabled={dragItemOrigin.includes("tracklist")}
+        >
           {(provided, snapshot) => (
-            <ul
+            <div
               className="playlists-top"
               {...provided.droppableProps}
               ref={provided.innerRef}
@@ -156,7 +165,7 @@ function Main({ isValidSession, history }) {
                     index={index}
                   >
                     {(provided, snapshot) => (
-                      <li
+                      <div
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         ref={provided.innerRef}
@@ -167,14 +176,14 @@ function Main({ isValidSession, history }) {
                         onClick={() => getTracklist(item.tracks.href, 0)}
                       >
                         <PlaylistItem image={item.images} title={item.name} />
-                      </li>
+                      </div>
                     )}
                   </Draggable>
                 );
               })}
 
               {provided.placeholder}
-            </ul>
+            </div>
           )}
         </Droppable>
         <div className="working-space">
@@ -183,6 +192,7 @@ function Main({ isValidSession, history }) {
               <Droppable
                 key={"playlist-container-" + sectionIndex}
                 droppableId={"playlist-container-" + sectionIndex}
+                isDropDisabled={dragItemOrigin.includes("tracklist")}
               >
                 {(provided, snapshot) => (
                   <section
@@ -191,7 +201,9 @@ function Main({ isValidSession, history }) {
                     style={getListStyle(snapshot.isDraggingOver)}
                   >
                     {section.lists.length > 0 ? (
+                      // if the section isnt empty render playlists
                       section.selected !== null ? (
+                        // if a playlist is selected render this playlist
                         <div className="tracklist">
                           <div className="tracklist-header">
                             <h4>{section.lists[section.selected].data.name}</h4>
@@ -214,27 +226,24 @@ function Main({ isValidSession, history }) {
                           </div>
                           <Droppable
                             key={"section-" + sectionIndex}
-                            droppableId={"playlist-" + sectionIndex}
-                            // change this later when preventing dropping playlists in tracklist
-                            isDropDisabled={false}
+                            droppableId={`tracklist-${sectionIndex}-${section.selected}`}
+                            isDropDisabled={dragItemOrigin === "playlists-top"}
                           >
                             {(provided, snapshot) => (
                               <ul
-                                className={
-                                  "tracklist-content"
-                                }
+                                className={"tracklist-content"}
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                                 style={getListStyle(snapshot.isDraggingOver)}
                               >
                                 {section.lists[section.selected].tracklist.map(
-                                  (item) => {
+                                  (item, trackIndex) => {
                                     const track = item.track;
                                     return (
                                       <Draggable
                                         key={track.id}
-                                        draggableId={track.id.toString()}
-                                        index={sectionIndex}
+                                        draggableId={`tracklist-${sectionIndex}-${trackIndex}`}
+                                        index={trackIndex}
                                       >
                                         {(provided, snapshot) => (
                                           <li
@@ -265,7 +274,7 @@ function Main({ isValidSession, history }) {
                           </Droppable>
                         </div>
                       ) : (
-                        //render all playlists
+                        // if no playlist is selected render all playlists
                         section.lists.map((item, itemIndex) => {
                           return (
                             <Droppable
@@ -280,7 +289,9 @@ function Main({ isValidSession, history }) {
                                   style={getListStyle(snapshot.isDraggingOver)}
                                   {...provided.droppableProps}
                                   ref={provided.innerRef}
-                                  onDoubleClick={()=>handleMaximize(sectionIndex, itemIndex)}
+                                  onDoubleClick={() =>
+                                    handleMaximize(sectionIndex, itemIndex)
+                                  }
                                 >
                                   <PlaylistItem
                                     image={item.data.images}
