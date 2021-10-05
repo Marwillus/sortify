@@ -30,7 +30,7 @@ function Main({ isValidSession, history }) {
   ]);
   const [dragItemOrigin, setDragItemOrigin] = useState("");
 
-  // console.log(playlists);
+  console.log(playlists);
 
   if (!isValidSession()) history.push("/");
 
@@ -47,34 +47,19 @@ function Main({ isValidSession, history }) {
   }, [token]);
 
   // get tracklist of a playlist and put it in the right column
-  const getTracklist = (playlistData, column) => {
+  const getTracklist = async (playlistData) => {
     const tracklistUrl = playlistData.tracks.href;
-    axios
+    return axios
       .get(tracklistUrl, {
         headers: {
           Authorization: "Bearer " + token,
         },
       })
-      .then((res) => {
-        setPlaylists((prevLists) => {
-          return prevLists.map((section, i) => {
-            if (i === column) {
-              return {
-                ...section,
-                lists: [
-                  ...section.lists,
-                  { tracklist: res.data.items, data: playlistData },
-                ],
-              };
-            }
-            return section;
-          });
-        });
-      })
+      .then((res) => res.data.items)
       .catch((err) => console.log(err));
   };
 
-  // reorder listItem
+  // reorder listItem in play- and tracklist
   const reorder = (list, startIndex, endIndex) => {
     const result = [...list];
     const [removed] = result.splice(startIndex, 1);
@@ -82,34 +67,61 @@ function Main({ isValidSession, history }) {
 
     return result;
   };
+  // check if there is already a playlist in the section
+  const includesPlaylist = (sectionList, selectedPlaylist) => {
+    let isIncluded = false 
+    sectionList.forEach((element) => {
+      if (element.data.id === selectedPlaylist.id) isIncluded= true;
+    });
+    return isIncluded
+  };
 
   // handle drag&drop
   const handleOnDragEnd = (result) => {
-    // console.table(result);
+    console.log(result);
     if (!result.destination) return;
 
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
 
     if (result.source.droppableId === "playlists-top") {
+      // sort playlists inside top bar
       if (result.destination.droppableId === result.source.droppableId) {
-        // sort playlists inside top bar
         const items = reorder(playlistResult, sourceIndex, destinationIndex);
         setPlaylistResult(items);
-      } else {
-        // get tracklist from playlist and put it into section
+      }
+      // get tracklist from playlist and put it into section
+      else {
         const playlistPosition = parseInt(
           result.destination.droppableId.slice(-1)
         );
         const selectedPlaylist = [...playlistResult].splice(sourceIndex, 1)[0];
-        getTracklist(selectedPlaylist, playlistPosition);
+
+        if (includesPlaylist(playlists[playlistPosition].lists, selectedPlaylist)) return
+
+        getTracklist(selectedPlaylist).then((tracklist) => {
+          setPlaylists((prevLists) => {
+            return prevLists.map((section, i) => {
+              if (i === playlistPosition) {
+                return {
+                  ...section,
+                  lists: [
+                    ...section.lists,
+                    { tracklist: tracklist, data: selectedPlaylist },
+                  ],
+                };
+              }
+              return section;
+            });
+          });
+        });
       }
     } else {
-      // sort tracklist order
-      const tracklistIndexes = result.destination.droppableId.split("-");
-      const sectionIndex = tracklistIndexes[tracklistIndexes.length - 2];
-      const playlistIndex = tracklistIndexes[tracklistIndexes.length - 1];
-      if (result.destination.droppableId === result.source.droppableId) {
+      const playlistPosition = result.destination.droppableId.split("-");
+      const sectionIndex = playlistPosition[playlistPosition.length - 2];
+      const playlistIndex = playlistPosition[playlistPosition.length - 1];
+      // sort tracklist order if item is from same tracklist
+      if (result.source.droppableId === result.destination.droppableId) {
         const newTracklist = reorder(
           playlists[sectionIndex].lists[playlistIndex].tracklist,
           result.source.index,
@@ -118,7 +130,22 @@ function Main({ isValidSession, history }) {
         const newPlaylists = [...playlists];
         newPlaylists[sectionIndex].lists[playlistIndex].tracklist =
           newTracklist;
-        setPlaylists(newPlaylists);
+        // setPlaylists(newPlaylists);
+      }
+      if (result.destination.droppableId.includes("playlist-item-")) {
+        const tracklistItemSource = result.source.droppableId.split("-");
+        const trackSectionSource =
+          tracklistItemSource[tracklistItemSource.length - 2];
+        const trackPlaylistSource =
+          tracklistItemSource[tracklistItemSource.length - 1];
+        const newPlaylists = [...playlists];
+        const newTrack =
+          newPlaylists[trackSectionSource].lists[trackPlaylistSource].tracklist[
+            sourceIndex
+          ];
+        newPlaylists[sectionIndex].lists[playlistIndex].tracklist.push(
+          newTrack
+        );
       }
     }
   };
@@ -306,8 +333,9 @@ function Main({ isValidSession, history }) {
                       )
                     ) : (
                       <div className="tracklist-placeholder">
-                        {" "}
-                        Drop a Playlist <IoAddCircleOutline />
+                        <div>
+                          Drop a Playlist <IoAddCircleOutline />
+                        </div>
                       </div>
                     )}
 
