@@ -43,7 +43,7 @@
   }
 }
 
-.working-space {
+.work-space {
   display: flex;
   flex-direction: row;
   position: absolute;
@@ -67,7 +67,8 @@
     background-color: #000000;
     font-size: 2rem;
     position: absolute;
-    right: 1rem;
+    right: 0rem;
+    top: 0;
     svg{
       width: 1.5rem;
       height: 1.5rem;
