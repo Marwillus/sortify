@@ -67,14 +67,18 @@
     background-color: #000000;
     font-size: 2rem;
     position: absolute;
-    right: 0rem;
-    top: 0;
+    right: 0.5rem;
+    top: 0.5rem;
     svg{
       width: 1.5rem;
       height: 1.5rem;
     }
     &:hover{
       background-color: #3f513f
+    }
+    &:active{
+      background-color: #badfba;
+      color:black;
     }
   }
 }
@@ -163,13 +167,65 @@
 .tracklist-placeholder {
   width: 100%;
   text-align: center;
+  margin-top: 2rem;
   font-size: 2rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.2);
-  svg {
-    display: block;
-    padding-top: 1rem;
-    font-size: 4rem;
-    margin: auto;
+  user-select: none;
+  .create-new-intro{
+    @include round-btn(5rem);
+    margin-top: 2rem;
+    box-shadow: none;
+    svg {
+      display: block;
+      font-size: 5rem;
+    }
+    &:hover{
+  color: rgba(255, 255, 255, 0.6);
+}
+    &:active{
+      color: #585858;
+    }
   }
+}
+
+.modal-bg{
+  z-index: 3;
+  position: absolute;
+  background: #00000080;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .modal-create-pl{
+    background: #3f513f;
+    height: fit-content;
+    padding: 2.5rem;
+    border-radius: .5rem;
+    box-shadow: black 5px 5px 16px;
+    position: relative;
+    input, button{
+      line-height: 2.5rem;
+      font-size: 1.5rem;
+      padding: 0 .75rem;
+      color: #c7c6c6;
+    }
+    input{
+      background: #5f6d5f;
+      outline: #0e130e;
+    }
+    button{
+      background: #0e130e;
+    }
+  }
+}
+.btn-close{
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  @include round-btn(2rem);
+  background: #5f6d5f;
+}
+.inactive{
+  display: none;
 }
