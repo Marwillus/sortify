@@ -18,7 +18,9 @@ function Workspace({
     sectionIndex: 0,
   });
   const [playlistName, setPlaylistName] = useState("");
-  console.log(playlists);
+  const prevTrack = new Audio('')
+
+//   console.log(playlists);
   const createPlaylist = (name, sectionIndex) => {
     setPlaylists((prevPl) => {
       return prevPl.map((section, i) => {
@@ -60,6 +62,14 @@ function Workspace({
       });
     });
   };
+  const playPreview = (url, mode)=>{
+    prevTrack.src=url
+    if (mode==='start') prevTrack.play()
+    if (mode==='stop'){
+        prevTrack.pause();
+        prevTrack.currentTime = 0;
+    }
+  }
 
   return (
     <div className="work-space">
@@ -152,6 +162,8 @@ function Workspace({
                                           provided.draggableProps.style
                                         )}
                                         className="tracklist-item"
+                                        onMouseEnter={()=>playPreview(track.preview_url,'start')}
+                                        onMouseLeave={()=>playPreview(track.preview_url, 'stop')}
                                       >
                                         <TracklistItem
                                           key={track.id}
