@@ -9,32 +9,20 @@
 ![Git](https://img.shields.io/badge/-Git-black?style=flat-square&logo=git)
 ![GitHub](https://img.shields.io/badge/-GitHub-black?style=flat-square&logo=github)
 
-Discofy ist eine Web Applikation, die es ermöglicht ohne großen Aufwand neue Musik nach eigenen Präferenzen zu entdecken und somit personalisierte Spotify Playlists zu erstellen.
+Sortify ist eine Web Applikation, die es ermöglicht ohne großen Aufwand neue Musik nach eigenen Präferenzen zu entdecken und somit personalisierte Spotify Playlists zu erstellen.
 
-Entscheide dich für eine Kategorie, die dir zusagt, seien es deine Lieblings-Artists, -Genres oder Neuerscheinungen. Discofy liefert dir passend dazu eine Reihe von Song-Vorschlägen. Lausche und entdecke neue Musik, die du liebst und erstelle deine perfekte Playlist.
+Entscheide dich für eine Kategorie, die dir zusagt, seien es deine Lieblings-Artists, -Genres oder Neuerscheinungen. Sortify liefert dir passend dazu eine Reihe von Song-Vorschlägen. Lausche und entdecke neue Musik, die du liebst und erstelle deine perfekte Playlist.
 
 Für die Verwendung der App benötigst du lediglich einen Spotify Account.
 
-Erstelle deine personalisierte Playlist jetzt auf [Discofy](discofy-music-app.herokuapp.com)
 
-Eine vollständige Video-Vorschau der App, kannst du unter vollgendem Link ansehen: [Discofy App-Vorschau](https://youtu.be/vyBS1CR28WM)
 
-## Beschreibung
-Dieses Projekt wurde aufgesetzt mit [Create React App](https://github.com/facebook/create-react-app) und bezieht Daten aus der [Spotify Web API](https://developer.spotify.com/documentation/web-api).
-
-Nach einem erfolgreichen Login über Spotify gelangt man zur Kategorieauswahl
-
-![App Vorschau für die Kategorieauswahl](https://github.com/Git-EL/spotify_project/blob/main/src/assets/selection_page.png)
-
-Hat man seine Auswahl getroffen, erhält man nun passende Song-Vorschläge. Fährt man über die einzelnen Bilder der Vorschläge, spielt sich eine Song-Vorschau ab und kann dann die Lieder, die einem gefallen zur Playlist hinzufügen um diese auf Spotify zu speichern.
-
-![App Vorschau für die Songauswahl](https://github.com/Git-EL/spotify_project/blob/main/src/assets/filter_page.png)
 
 ## Installation
 
 Klone das Repository
  ```sh 
- $ git clone https://github.com/Git-EL/discofy_project.git
+ $ git clone
  ```
 
 Gehe in den Projektordner
@@ -79,27 +67,6 @@ Die Seite wird neustarten, wenn du Änderungen vornimmst.
 ## Autoren
 
     
-<p>
- <a href="https://github.com/Git-EL"
-    ><img
-            src="https://avatars.githubusercontent.com/u/65949739?s=400&u=e749c6170b32cd7e893f0372c39a607fa0571e0d&v=4"
-            width="45"
-            height="45"
-    /></a>
-    <a href="https://github.com/Suzy1412"
-    ><img
-            src="https://avatars.githubusercontent.com/u/65951047?v=4"
-            width="45"
-            height="45"
-    /></a>
-</p>
-    
-Wenn du Fragen hast oder uns kontaktieren möchtest, erreichst du uns unter den folgenden Adressen:
 
-Esther:
-* [E-Mail](lee_esther@live.com)
-* [LinkedIn](https://www.linkedin.com/in/esther-lee-627451205)
-
-Suzana: 
-* [E-Mail](code.s09@outlook.com)
-* [LinkedIn](https://www.linkedin.com/in/suzana-jovanovic-1b9ab81b2)
+Marcus:
+* [E-Mail](mawillus-tech@gmail.com)
