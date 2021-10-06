@@ -30,7 +30,7 @@ function Main({ isValidSession, history }) {
   ]);
   const [dragItemOrigin, setDragItemOrigin] = useState("");
 
-  console.log(playlists);
+  // console.log(playlists);
 
   if (!isValidSession()) history.push("/");
 
@@ -69,45 +69,54 @@ function Main({ isValidSession, history }) {
   };
   // check if there is already a playlist in the section
   const includesPlaylist = (sectionList, selectedPlaylist) => {
-    let isIncluded = false 
+    let isIncluded = false;
     sectionList.forEach((element) => {
-      if (element.data.id === selectedPlaylist.id) isIncluded= true;
+      if (element.data.id === selectedPlaylist.id) isIncluded = true;
     });
-    return isIncluded
+    return isIncluded;
   };
 
   // handle drag&drop
   const handleOnDragEnd = (result) => {
-    console.log(result);
+    // console.log(result);
     if (!result.destination) return;
 
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
 
     if (result.source.droppableId === "playlists-top") {
-      // sort playlists inside top bar
+      // order playlists inside top bar
       if (result.destination.droppableId === result.source.droppableId) {
-        const items = reorder(playlistResult, sourceIndex, destinationIndex);
-        setPlaylistResult(items);
+        setPlaylistResult((prevPlaylists) => {
+          const items = reorder(prevPlaylists, sourceIndex, destinationIndex);
+          return items;
+        });
       }
       // get tracklist from playlist and put it into section
       else {
-        const playlistPosition = parseInt(
+        const tracklistItemDest = parseInt(
           result.destination.droppableId.slice(-1)
         );
         const selectedPlaylist = [...playlistResult].splice(sourceIndex, 1)[0];
 
-        if (includesPlaylist(playlists[playlistPosition].lists, selectedPlaylist)) return
+        if (
+          includesPlaylist(playlists[tracklistItemDest].lists, selectedPlaylist)
+        )
+          return;
 
         getTracklist(selectedPlaylist).then((tracklist) => {
           setPlaylists((prevLists) => {
             return prevLists.map((section, i) => {
-              if (i === playlistPosition) {
+              if (i === tracklistItemDest) {
                 return {
                   ...section,
                   lists: [
                     ...section.lists,
-                    { tracklist: tracklist, data: selectedPlaylist },
+                    {
+                      tracklist: tracklist,
+                      data: selectedPlaylist,
+                      tracksAdded: 0,
+                    },
                   ],
                 };
               }
@@ -116,36 +125,85 @@ function Main({ isValidSession, history }) {
           });
         });
       }
-    } else {
-      const playlistPosition = result.destination.droppableId.split("-");
-      const sectionIndex = playlistPosition[playlistPosition.length - 2];
-      const playlistIndex = playlistPosition[playlistPosition.length - 1];
+    }
+
+    if (result.source.droppableId.includes("tracklist")) {
+      const tracklistItemDest = result.destination.droppableId.split("-");
+      const tracklistSectionDest = parseInt(
+        tracklistItemDest[tracklistItemDest.length - 2]
+      );
+      const tracklistPlaylistDest = parseInt(
+        tracklistItemDest[tracklistItemDest.length - 1]
+      );
+
       // sort tracklist order if item is from same tracklist
       if (result.source.droppableId === result.destination.droppableId) {
-        const newTracklist = reorder(
-          playlists[sectionIndex].lists[playlistIndex].tracklist,
-          result.source.index,
-          result.destination.index
-        );
-        const newPlaylists = [...playlists];
-        newPlaylists[sectionIndex].lists[playlistIndex].tracklist =
-          newTracklist;
-        // setPlaylists(newPlaylists);
+        setPlaylists((prevPlaylists) => {
+          return prevPlaylists.map((section, i) => {
+            if (i === tracklistSectionDest) {
+              return {
+                ...section,
+                lists: section.lists.map((list, i) => {
+                  if (i === tracklistPlaylistDest) {
+                    return {
+                      ...list,
+                      tracklist: reorder(
+                        list.tracklist,
+                        sourceIndex,
+                        destinationIndex
+                      ),
+                    };
+                  }
+                  return list;
+                }),
+              };
+            }
+            return section;
+          });
+          // const newPlaylists = [...prevPlaylists];
+          // const newTracklist = reorder(
+          //   prevPlaylists[tracklistSectionDest].lists[tracklistPlaylistDest].tracklist,
+          //   result.source.index,
+          //   result.destination.index
+          // );
+          // newPlaylists[tracklistSectionDest].lists[tracklistPlaylistDest].tracklist =
+          //   newTracklist;
+          // return newPlaylists
+        });
       }
       if (result.destination.droppableId.includes("playlist-item-")) {
         const tracklistItemSource = result.source.droppableId.split("-");
-        const trackSectionSource =
-          tracklistItemSource[tracklistItemSource.length - 2];
-        const trackPlaylistSource =
-          tracklistItemSource[tracklistItemSource.length - 1];
-        const newPlaylists = [...playlists];
-        const newTrack =
-          newPlaylists[trackSectionSource].lists[trackPlaylistSource].tracklist[
-            sourceIndex
-          ];
-        newPlaylists[sectionIndex].lists[playlistIndex].tracklist.push(
-          newTrack
+        const trackSectionSource = parseInt(
+          tracklistItemSource[tracklistItemSource.length - 2]
         );
+
+        const trackPlaylistSource = parseInt(
+          tracklistItemSource[tracklistItemSource.length - 1]
+        );
+        setPlaylists((prevPlaylists) => {
+          const newTrack =
+            prevPlaylists[trackSectionSource].lists[trackPlaylistSource]
+              .tracklist[sourceIndex];
+
+          return prevPlaylists.map((section, i) => {
+            if (i === tracklistSectionDest) {
+              return {
+                ...section,
+                lists: section.lists.map((list, i) => {
+                  if (i === tracklistPlaylistDest) {
+                    return {
+                      ...list,
+                      tracklist: [...list.tracklist, newTrack],
+                      tracksAdded: list.tracksAdded +1,
+                    };
+                  }
+                  return list;
+                }),
+              };
+            }
+            return section;
+          });
+        });
       }
     }
   };
@@ -227,8 +285,9 @@ function Main({ isValidSession, history }) {
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}
                   >
+                    {section.selected === null && <div className='btn create-pl'><IoAddCircleOutline/></div> }
                     {section.lists.length > 0 ? (
-                      // if the section isnt empty render playlists
+                      // if the section is not empty render playlists
                       section.selected !== null ? (
                         // if a playlist is selected render this playlist
                         <div className="tracklist">
@@ -320,9 +379,11 @@ function Main({ isValidSession, history }) {
                                     handleMaximize(sectionIndex, itemIndex)
                                   }
                                 >
+                                    
                                   <PlaylistItem
                                     image={item.data.images}
                                     title={item.data.name}
+                                    tracksAdded={item.tracksAdded}
                                   />
                                   {provided.placeholder}
                                 </div>
