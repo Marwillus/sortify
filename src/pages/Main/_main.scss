@@ -19,6 +19,7 @@
   cursor: pointer;
   user-select: none;
   background-color: rgba(130, 167, 129, 0.295);
+  box-shadow: #0000005e 2px 2px 6px;
   .playlist-cover {
     width: 90px;
     aspect-ratio: 1/1;
@@ -220,12 +221,24 @@
     }
   }
 }
-.btn-close{
+.btn-modal-close, .btn-delete-pl{
   position: absolute;
   top: -4px;
   right: -4px;
+}
+.btn-modal-close{
   @include round-btn(2rem);
   background: #5f6d5f;
+  &:hover{
+    background: #808a80;
+  }
+}
+.btn-delete-pl{
+  @include round-btn(1.25rem, 1rem);
+  background: #000000;
+  &:hover{
+    background: #808a80;
+  }
 }
 .inactive{
   display: none;

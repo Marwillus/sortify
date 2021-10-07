@@ -3,7 +3,6 @@ import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import { IoAddCircleOutline, IoCloseOutline } from "react-icons/io5";
 import { FiMinimize2, FiSave } from "react-icons/fi";
-import PlaylistItem from "./PlaylistItem";
 import TracklistItem from "./TracklistItem";
 
 function Workspace({
@@ -18,9 +17,9 @@ function Workspace({
     sectionIndex: 0,
   });
   const [playlistName, setPlaylistName] = useState("");
-  const prevTrack = new Audio('')
+  const prevTrack = new Audio("");
 
-//   console.log(playlists);
+  //   console.log(playlists);
   const createPlaylist = (name, sectionIndex) => {
     setPlaylists((prevPl) => {
       return prevPl.map((section, i) => {
@@ -39,6 +38,17 @@ function Workspace({
     });
     setOpenModal((prevState) => {
       return { ...prevState, status: false };
+    });
+  };
+  const deletePlaylist = (sectionIndex, itemIndex) => {
+    console.log("delete");
+    setPlaylists((prevPl) => {
+      return prevPl.map((section, i) => {
+        if (sectionIndex === i) {
+          section.lists.splice(itemIndex, 1);
+        }
+        return section;
+      });
     });
   };
   const handleMinimize = (index) => {
@@ -62,14 +72,14 @@ function Workspace({
       });
     });
   };
-  const playPreview = (url, mode)=>{
-    prevTrack.src=url
-    if (mode==='start') prevTrack.play()
-    if (mode==='stop'){
-        prevTrack.pause();
-        prevTrack.currentTime = 0;
+  const playPreview = (url, mode) => {
+    prevTrack.src = url;
+    if (mode === "start") prevTrack.play();
+    if (mode === "stop") {
+      prevTrack.pause();
+      prevTrack.currentTime = 0;
     }
-  }
+  };
 
   return (
     <div className="work-space">
@@ -87,7 +97,7 @@ function Workspace({
             create
           </button>
           <div
-            className="btn-close"
+            className="btn-modal-close"
             onClick={() => setOpenModal({ ...openModal, status: false })}
           >
             <IoCloseOutline />
@@ -162,8 +172,15 @@ function Workspace({
                                           provided.draggableProps.style
                                         )}
                                         className="tracklist-item"
-                                        onMouseEnter={()=>playPreview(track.preview_url,'start')}
-                                        onMouseLeave={()=>playPreview(track.preview_url, 'stop')}
+                                        onMouseEnter={() =>
+                                          playPreview(
+                                            track.preview_url,
+                                            "start"
+                                          )
+                                        }
+                                        onMouseLeave={() =>
+                                          playPreview(track.preview_url, "stop")
+                                        }
                                       >
                                         <TracklistItem
                                           key={track.id}
@@ -202,7 +219,7 @@ function Workspace({
                             key={`playlist-item-${sectionIndex}-${itemIndex}`}
                             droppableId={`playlist-item-${sectionIndex}-${itemIndex}`}
                             // change this later when preventing dropping playlists in tracklist
-                            isDropDisabled={false}
+                            isDropDisabled={dragItemOrigin.includes('playlist')}
                           >
                             {(provided, snapshot) => (
                               <div
@@ -214,11 +231,52 @@ function Workspace({
                                   handleMaximize(sectionIndex, itemIndex)
                                 }
                               >
-                                <PlaylistItem
-                                  image={item.data.images}
-                                  title={item.data.name}
-                                  tracksAdded={item.tracksAdded}
-                                />
+                                <Draggable
+                                  draggableId={`playlist-item-${sectionIndex}-${itemIndex}`}
+                                  index={itemIndex}
+                                >
+                                  {(provided, snapshot) => (
+                                    <div
+                                      className="playlist-item"
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      ref={provided.innerRef}
+                                      style={getItemStyle(
+                                        snapshot.isDragging,
+                                        provided.draggableProps.style
+                                      )}
+                                    >
+                                      <div
+                                        className="btn-delete-pl"
+                                        onClick={() =>
+                                          deletePlaylist(
+                                            sectionIndex,
+                                            itemIndex
+                                          )
+                                        }
+                                      >
+                                        <IoCloseOutline />
+                                      </div>
+                                      <img
+                                        className="playlist-cover"
+                                        src={
+                                          item.data.images[
+                                            item.data.images.length - 1
+                                          ].url
+                                        }
+                                        alt="cover"
+                                      />
+                                      <div className="playlist-title">
+                                        {item.data.name}
+                                      </div>
+                                      {item.tracksAdded > 0 && (
+                                        <div className="tracks-added">
+                                          {item.tracksAdded}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </Draggable>
                                 {provided.placeholder}
                               </div>
                             )}
