@@ -21,6 +21,7 @@ function Main({ isValidSession, history }) {
   const params = localStorage.getItem("params");
   const token = JSON.parse(params).access_token;
 
+  const [userId, setUserId] = useState("");
   const [playlistResult, setPlaylistResult] = useState([]);
   const [playlists, setPlaylists] = useState([
     { lists: [], selected: 0 },
@@ -34,6 +35,7 @@ function Main({ isValidSession, history }) {
 
   // get users playlist at start of a session
   useEffect(() => {
+    console.log("getting data from spotify api");
     axios
       .get("https://api.spotify.com/v1/me/playlists", {
         headers: {
@@ -41,6 +43,15 @@ function Main({ isValidSession, history }) {
         },
       })
       .then((res) => setPlaylistResult(res.data.items))
+      .catch((err) => console.log(err));
+
+    axios
+      .get("https://api.spotify.com/v1/me/", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => setUserId(res.data.id))
       .catch((err) => console.log(err));
   }, [token]);
 
@@ -57,6 +68,40 @@ function Main({ isValidSession, history }) {
       .catch((err) => console.log(err));
   };
 
+  const savePlaylist = (pl) => {
+    console.log(pl.data);
+    // create new playlist on spotify
+    if (!pl.data.id) {
+      axios
+        .post(
+          `https://api.spotify.com/v1/users/${userId}/playlists`,
+          {
+            name: pl.data.name,
+            description: "created with sortify",
+            public: false,
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((res) => {
+          const newPlaylistId = res.data.id;
+          const tracksUris = pl.tracksAdded.join();
+          console.log(tracksUris);
+          axios({
+            method: "post",
+            url: `https://api.spotify.com/v1/playlists/${newPlaylistId}/tracks?uris=${tracksUris}`,
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+    console.log('only new created playlists yet');
+  };
   // reorder listItem in play- and tracklist
   const reorder = (list, startIndex, endIndex) => {
     const result = [...list];
@@ -66,9 +111,9 @@ function Main({ isValidSession, history }) {
     return result;
   };
   // check if there is already a playlist in the section
-  const includesPlaylist = (sectionList, selectedPlaylist) => {
+  const includesPlaylist = (array, selectedPlaylist) => {
     let isIncluded = false;
-    sectionList.forEach((element) => {
+    array.forEach((element) => {
       if (element.data.id === selectedPlaylist.id) isIncluded = true;
     });
     return isIncluded;
@@ -113,7 +158,7 @@ function Main({ isValidSession, history }) {
                     {
                       tracklist: tracklist,
                       data: selectedPlaylist,
-                      tracksAdded: 0,
+                      tracksAdded: [],
                     },
                   ],
                 };
@@ -189,11 +234,22 @@ function Main({ isValidSession, history }) {
                 ...section,
                 lists: section.lists.map((list, i) => {
                   if (i === tracklistPlaylistDest) {
-                    return {
-                      ...list,
-                      tracklist: [...list.tracklist, newTrack],
-                      tracksAdded: list.tracksAdded + 1,
-                    };
+                    // check if track is already in playlist
+                    let isIncluded = false;
+                    list.tracklist.forEach((trackObj) => {
+                      if (trackObj.track.id === newTrack.track.id)
+                        isIncluded = true;
+                    });
+
+                    if (isIncluded) {
+                      return list;
+                    } else {
+                      return {
+                        ...list,
+                        tracklist: [...list.tracklist, newTrack],
+                        tracksAdded: [...list.tracksAdded, newTrack.track.uri],
+                      };
+                    }
                   }
                   return list;
                 }),
@@ -228,6 +284,7 @@ function Main({ isValidSession, history }) {
           dragItemOrigin={dragItemOrigin}
           getListStyle={getListStyle}
           getItemStyle={getItemStyle}
+          savePlaylist={savePlaylist}
         />
       </DragDropContext>
     </>

@@ -29,6 +29,7 @@ function Topbar({ playlistData, dragItemOrigin, getListStyle, getItemStyle }) {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       ref={provided.innerRef}
+                      className='playlist-item'
                       style={getItemStyle(
                         snapshot.isDragging,
                         provided.draggableProps.style

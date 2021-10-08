@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import axios from "axios";
 
 import { IoAddCircleOutline, IoCloseOutline } from "react-icons/io5";
 import { FiMinimize2, FiSave } from "react-icons/fi";
@@ -11,15 +12,17 @@ function Workspace({
   dragItemOrigin,
   getListStyle,
   getItemStyle,
+  savePlaylist,
 }) {
   const [openModal, setOpenModal] = useState({
     status: false,
     sectionIndex: 0,
   });
   const [playlistName, setPlaylistName] = useState("");
+  const [playOnHover, setplayOnHover] = useState(false);
   const prevTrack = new Audio("");
 
-  //   console.log(playlists);
+  console.log(playlists);
   const createPlaylist = (name, sectionIndex) => {
     setPlaylists((prevPl) => {
       return prevPl.map((section, i) => {
@@ -30,12 +33,13 @@ function Workspace({
               images: [{ height: 90, url: "https://picsum.photos/90/90" }],
             },
             tracklist: [],
-            tracksAdded: 0,
+            tracksAdded: [],
           });
         }
         return section;
       });
     });
+    setPlaylistName("");
     setOpenModal((prevState) => {
       return { ...prevState, status: false };
     });
@@ -51,6 +55,7 @@ function Workspace({
       });
     });
   };
+ 
   const handleMinimize = (index) => {
     setPlaylists((prevPl) => {
       return prevPl.map((section, i) => {
@@ -72,13 +77,11 @@ function Workspace({
       });
     });
   };
-  const playPreview = (url, mode) => {
-    prevTrack.src = url;
-    if (mode === "start") prevTrack.play();
-    if (mode === "stop") {
-      prevTrack.pause();
-      prevTrack.currentTime = 0;
+  const playPreview = (url) => {
+    if (prevTrack.src !== url) {
+      prevTrack.src = url;
     }
+    prevTrack.paused ? prevTrack.play() : prevTrack.pause();
   };
 
   return (
@@ -124,7 +127,21 @@ function Workspace({
                     <div className="tracklist">
                       <div className="tracklist-header">
                         <h4>{section.lists[section.selected].data.name}</h4>
-                        <div>
+                        <div className="btn-bar">
+                          <div className="checkbox-container">
+                            <label>
+                              autoplay
+                              <input
+                                type="checkbox"
+                                name="playmode"
+                                value={playOnHover}
+                                onChange={() => setplayOnHover(!playOnHover)}
+                                className="checkbox"
+                              />
+                              <span className="check"></span>
+                            </label>
+                          </div>
+
                           <button
                             className="btn minimize"
                             onClick={() =>
@@ -135,7 +152,9 @@ function Workspace({
                           </button>
                           <button
                             className="btn save"
-                            onClick={() => handleMinimize(section.selected)}
+                            onClick={() =>
+                              savePlaylist(section.lists[section.selected])
+                            }
                           >
                             <FiSave />
                           </button>
@@ -144,7 +163,7 @@ function Workspace({
                       <Droppable
                         key={"section-" + sectionIndex}
                         droppableId={`tracklist-${sectionIndex}-${section.selected}`}
-                        isDropDisabled={dragItemOrigin === "playlists-top"}
+                        isDropDisabled={dragItemOrigin.includes("playlist")}
                       >
                         {(provided, snapshot) => (
                           <ul
@@ -172,14 +191,17 @@ function Workspace({
                                           provided.draggableProps.style
                                         )}
                                         className="tracklist-item"
+                                        onClick={() =>
+                                          !playOnHover &&
+                                          playPreview(track.preview_url)
+                                        }
                                         onMouseEnter={() =>
-                                          playPreview(
-                                            track.preview_url,
-                                            "start"
-                                          )
+                                          playOnHover &&
+                                          playPreview(track.preview_url)
                                         }
                                         onMouseLeave={() =>
-                                          playPreview(track.preview_url, "stop")
+                                          playOnHover &&
+                                          playPreview(track.preview_url)
                                         }
                                       >
                                         <TracklistItem
@@ -215,36 +237,40 @@ function Workspace({
                       </div>
                       {section.lists.map((item, itemIndex) => {
                         return (
-                          <Droppable
-                            key={`playlist-item-${sectionIndex}-${itemIndex}`}
-                            droppableId={`playlist-item-${sectionIndex}-${itemIndex}`}
-                            // change this later when preventing dropping playlists in tracklist
-                            isDropDisabled={dragItemOrigin.includes('playlist')}
+                          <Draggable
+                            draggableId={`playlist-item-${sectionIndex}-${itemIndex}`}
+                            index={itemIndex}
                           >
                             {(provided, snapshot) => (
                               <div
-                                className="playlist-drop-item"
-                                style={getListStyle(snapshot.isDraggingOver)}
-                                {...provided.droppableProps}
+                                className="playlist-item"
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
                                 ref={provided.innerRef}
-                                onDoubleClick={() =>
-                                  handleMaximize(sectionIndex, itemIndex)
-                                }
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
                               >
-                                <Draggable
-                                  draggableId={`playlist-item-${sectionIndex}-${itemIndex}`}
-                                  index={itemIndex}
+                                <Droppable
+                                  key={`playlist-item-${sectionIndex}-${itemIndex}`}
+                                  droppableId={`playlist-item-${sectionIndex}-${itemIndex}`}
+                                  // change this later when preventing dropping playlists in tracklist
+                                  isDropDisabled={dragItemOrigin.includes(
+                                    "playlist"
+                                  )}
                                 >
                                   {(provided, snapshot) => (
                                     <div
-                                      className="playlist-item"
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      ref={provided.innerRef}
-                                      style={getItemStyle(
-                                        snapshot.isDragging,
-                                        provided.draggableProps.style
+                                      className="playlist-drop-item"
+                                      style={getListStyle(
+                                        snapshot.isDraggingOver
                                       )}
+                                      {...provided.droppableProps}
+                                      ref={provided.innerRef}
+                                      onDoubleClick={() =>
+                                        handleMaximize(sectionIndex, itemIndex)
+                                      }
                                     >
                                       <div
                                         className="btn-delete-pl"
@@ -269,18 +295,24 @@ function Workspace({
                                       <div className="playlist-title">
                                         {item.data.name}
                                       </div>
-                                      {item.tracksAdded > 0 && (
-                                        <div className="tracks-added">
-                                          {item.tracksAdded}
-                                        </div>
-                                      )}
+
+                                      <div
+                                        className={
+                                          item.tracksAdded.length > 0
+                                            ? "tracks-added not-saved"
+                                            : "tracks-added"
+                                        }
+                                      >
+                                        {item.tracklist.length}
+                                      </div>
+
+                                      {/* {provided.placeholder} */}
                                     </div>
                                   )}
-                                </Draggable>
-                                {provided.placeholder}
+                                </Droppable>
                               </div>
                             )}
-                          </Droppable>
+                          </Draggable>
                         );
                       })}
                     </>
