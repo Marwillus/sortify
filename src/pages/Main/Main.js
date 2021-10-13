@@ -17,7 +17,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   ...draggableStyle,
 });
 
-function Main({ isValidSession, history }) {
+function Main({ isValidSession, history, setError }) {
   const params = localStorage.getItem("params");
   const token = JSON.parse(params).access_token;
 
@@ -31,7 +31,9 @@ function Main({ isValidSession, history }) {
 
   // console.log(playlists);
 
-  if (!isValidSession()) history.push("/");
+  useEffect(() => {
+    if (!isValidSession()) history.push("/");
+  }, [isValidSession, history]);
 
   // get users playlist at start of a session
   useEffect(() => {
@@ -43,7 +45,7 @@ function Main({ isValidSession, history }) {
         },
       })
       .then((res) => setPlaylistResult(res.data.items))
-      .catch((err) => console.log(err));
+      .catch((err) => history.push('/'+ err.response.status));
 
     axios
       .get("https://api.spotify.com/v1/me/", {
@@ -52,8 +54,8 @@ function Main({ isValidSession, history }) {
         },
       })
       .then((res) => setUserId(res.data.id))
-      .catch((err) => console.log(err));
-  }, [token]);
+      .catch((err) => history.push('/'+ err.response.status));
+  }, [token, history]);
 
   // get tracklist of a playlist and put it in the right column
   const getTracklist = async (playlistData) => {
@@ -69,7 +71,8 @@ function Main({ isValidSession, history }) {
   };
 
   const savePlaylist = (pl) => {
-    console.log(pl.data);
+    // console.log(pl.data);
+    const tracksUris = pl.tracksAdded.join();
     // create new playlist on spotify
     if (!pl.data.id) {
       axios
@@ -88,7 +91,7 @@ function Main({ isValidSession, history }) {
         )
         .then((res) => {
           const newPlaylistId = res.data.id;
-          const tracksUris = pl.tracksAdded.join();
+          
           console.log(tracksUris);
           axios({
             method: "post",
@@ -99,9 +102,17 @@ function Main({ isValidSession, history }) {
           });
         })
         .catch((err) => console.log(err));
+    } else{
+      axios({
+        method: "post",
+        url: `https://api.spotify.com/v1/playlists/${pl.data.id}/tracks?uris=${tracksUris}`,
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      });
     }
-    console.log('only new created playlists yet');
   };
+
   // reorder listItem in play- and tracklist
   const reorder = (list, startIndex, endIndex) => {
     const result = [...list];
@@ -203,15 +214,6 @@ function Main({ isValidSession, history }) {
             }
             return section;
           });
-          // const newPlaylists = [...prevPlaylists];
-          // const newTracklist = reorder(
-          //   prevPlaylists[tracklistSectionDest].lists[tracklistPlaylistDest].tracklist,
-          //   result.source.index,
-          //   result.destination.index
-          // );
-          // newPlaylists[tracklistSectionDest].lists[tracklistPlaylistDest].tracklist =
-          //   newTracklist;
-          // return newPlaylists
         });
       }
       if (result.destination.droppableId.includes("playlist-item-")) {

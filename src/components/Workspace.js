@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Droppable, Draggable } from "react-beautiful-dnd";
-import axios from "axios";
 
 import { IoAddCircleOutline, IoCloseOutline } from "react-icons/io5";
 import { FiMinimize2, FiSave } from "react-icons/fi";
@@ -22,7 +21,9 @@ function Workspace({
   const [playOnHover, setplayOnHover] = useState(false);
   const prevTrack = new Audio("");
 
+  console.log('playlists:');
   console.log(playlists);
+
   const createPlaylist = (name, sectionIndex) => {
     setPlaylists((prevPl) => {
       return prevPl.map((section, i) => {
