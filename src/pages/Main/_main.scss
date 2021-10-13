@@ -1,5 +1,41 @@
 @import "../../styles/mixins";
 
+.searchbar {
+  z-index: 5;
+  position: absolute;
+  top: 1rem;
+  height: 130px;
+  width: 602px;
+  background: rgba(0, 0, 0, 0.294);
+  backdrop-filter: blur(5px);
+  border-radius: 0 1rem 1rem 0;
+  border: rgba(220, 255, 217, 0.411) 1px solid;
+  transform: translateX(-510px);
+  transition: 0.5s ease-in-out;
+  &:hover {
+    transform: translateX(0);
+  }
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  input,
+  button {
+    background: none;
+    border: none;
+    height: 70%;
+    margin: 0 1rem;
+
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 0 0 7px #fff, 0 0 10px #0fa, 0 0 21px #0fa, 0 0 42px #0fa;
+  }
+  button {
+    font-size: 4rem;
+    line-height: 4rem;
+  }
+}
+
 .playlists-top {
   height: 160px;
   padding: 0.5rem;
@@ -9,7 +45,6 @@
   overflow-x: scroll;
   @include scrollbar(40, 100);
 }
-
 .playlist-item {
   position: relative;
   width: fit-content;
@@ -20,6 +55,9 @@
   user-select: none;
   background-color: rgba(130, 167, 129, 0.295);
   box-shadow: #0000005e 2px 2px 6px;
+  &:first-child {
+    margin-left: 100px;
+  }
   .playlist-cover {
     width: 90px;
     aspect-ratio: 1/1;
@@ -42,9 +80,8 @@
     font-size: 0.6rem;
     border-radius: 50%;
   }
-  .not-saved{
+  .not-saved {
     background-color: rgb(146, 53, 53);
-
   }
 }
 
@@ -92,16 +129,16 @@
   @include round-btn(2rem);
   margin-left: 0.5rem;
 }
-.btn-bar{
+.btn-bar {
   display: flex;
 }
 .checkbox-container {
-  padding-top: .5rem;
+  padding-top: 0.5rem;
   padding-right: 1rem;
   width: fit-content;
   label {
     user-select: none;
-    font-size: .75rem;
+    font-size: 0.75rem;
     color: #808a80;
     text-transform: uppercase;
   }
@@ -124,8 +161,8 @@
     }
   }
   .check {
-    width: .75rem;
-    height: .75rem;
+    width: 0.75rem;
+    height: 0.75rem;
     display: inline-block;
     vertical-align: bottom;
     // justify-content: center;
@@ -262,7 +299,6 @@
       line-height: 2.5rem;
       font-size: 1.5rem;
       padding: 0 0.75rem;
-
     }
     input {
       background: #c5c9c5;

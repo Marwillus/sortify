@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { DragDropContext } from "react-beautiful-dnd";
 
+import Searchbar from "../../components/Searchbar";
 import Topbar from "../../components/Topbar";
 import Workspace from "../../components/Workspace";
 
@@ -45,7 +46,7 @@ function Main({ isValidSession, history, setError }) {
         },
       })
       .then((res) => setPlaylistResult(res.data.items))
-      .catch((err) => history.push('/'+ err.response.status));
+      .catch((err) => history.push("/" + err.response.status));
 
     axios
       .get("https://api.spotify.com/v1/me/", {
@@ -54,7 +55,7 @@ function Main({ isValidSession, history, setError }) {
         },
       })
       .then((res) => setUserId(res.data.id))
-      .catch((err) => history.push('/'+ err.response.status));
+      .catch((err) => history.push("/" + err.response.status));
   }, [token, history]);
 
   // get tracklist of a playlist and put it in the right column
@@ -91,7 +92,7 @@ function Main({ isValidSession, history, setError }) {
         )
         .then((res) => {
           const newPlaylistId = res.data.id;
-          
+
           console.log(tracksUris);
           axios({
             method: "post",
@@ -102,7 +103,7 @@ function Main({ isValidSession, history, setError }) {
           });
         })
         .catch((err) => console.log(err));
-    } else{
+    } else {
       axios({
         method: "post",
         url: `https://api.spotify.com/v1/playlists/${pl.data.id}/tracks?uris=${tracksUris}`,
@@ -270,6 +271,7 @@ function Main({ isValidSession, history, setError }) {
   // render main /////////////////////////////////////
   return (
     <>
+      <Searchbar />
       <DragDropContext
         onDragStart={handleOnDragStart}
         onDragEnd={handleOnDragEnd}
